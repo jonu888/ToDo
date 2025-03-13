@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo Application</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        body {
+            background: linear-gradient(270deg, #1f1c2c, #928dab);
+            display: flex;
+            color: white;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 2rem 1rem;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar h4 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar .nav-link {
+            color: white;
+            padding: 0.8rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            font-size: 1.1rem;
+        }
+
+        .sidebar .nav-link i {
+            width: 24px;
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+        .sidebar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+            color: #4299e1;
+        }
+
+        .sidebar .nav-link.active {
+            background: rgba(66, 153, 225, 0.2);
+            color: #4299e1;
+            border-left: 3px solid #4299e1;
+        }
+
+        .content {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .welcome-section {
+            text-align: center;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            margin-bottom: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .welcome-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .welcome-quote {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .chart-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 0;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .chart-container {
+            width: 100%;
+            max-width: 800px;
+            height: 450px;
+            margin: 0 auto;
+            position: relative;
+            min-height: 0;
+        }
+
+        .chart-title {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h4 class="text-center">Task Manager</h4>
+        <nav class="nav flex-column">
+            <a href="" class="nav-link active">
+                <i class="fas fa-home"></i> Home
+            </a>
+            <a href="/all/{{no}}/" class="nav-link ">
+                <i class="fas fa-tasks"></i> All Tasks
+            </a>
+            
+            
+            <a href="/profile/{{no}}/" class="nav-link">
+                <i class="fas fa-user-circle"></i> Profile
+            </a>
+            <a href="{% url 'logout' %}" class="nav-link ">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+        </nav>
+    </div>
+
+    <div class="content">
+        <div class="welcome-section">
+            <h1>Welcome, {{ data }}!</h1>
+            <p class="welcome-quote">
+                "Welcome to your personal task management space. Here, every task you complete is a step toward your goals. 
+                Stay organized, track your progress, and celebrate your achievements. Remember, small steps lead to big accomplishments. 
+                Let's make today productive and meaningful together."
+            </p>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value">{{ completed_tasks }}</div>
+                <div class="stat-label">
+                    <i class="fas fa-check-circle me-2"></i>Completed Tasks
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ pending_tasks }}</div>
+                <div class="stat-label">
+                    <i class="fas fa-clock me-2"></i>Pending Tasks
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">{{ task|length }}</div>
+                <div class="stat-label">
+                    <i class="fas fa-tasks me-2"></i>Total Tasks
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-section">
+            <h2 class="chart-title">Task Completion Overview</h2>
+            <div class="chart-container">
+                <canvas id="taskProgressChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('taskProgressChart').getContext('2d');
+        const completedTasks = {{ completed_tasks|default:0 }};
+        const pendingTasks = {{ pending_tasks|default:0 }};
+        const total = completedTasks + pendingTasks;
+        const completionRate = total > 0 ? (completedTasks / total * 100).toFixed(1) : 0;
+
+        // Create vibrant gradients
+        const completedGradient = ctx.createLinearGradient(0, 0, 0, 400);
+        completedGradient.addColorStop(0, 'rgba(16, 185, 129, 0.9)');    // Emerald
+        completedGradient.addColorStop(1, 'rgba(16, 185, 129, 0.2)');
+
+        const pendingGradient = ctx.createLinearGradient(0, 0, 0, 400);
+        pendingGradient.addColorStop(0, 'rgba(249, 115, 22, 0.9)');     // Orange
+        pendingGradient.addColorStop(1, 'rgba(249, 115, 22, 0.2)');
+
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Task Statistics'],
+                datasets: [
+                    {
+                        label: 'Completed Tasks',
+                        data: [completedTasks],
+                        backgroundColor: completedGradient,
+                        borderColor: 'rgba(16, 185, 129, 1)',
+                        borderWidth: 2,
+                        borderRadius: 12,
+                        barPercentage: 0.8,
+                        categoryPercentage: 0.9
+                    },
+                    {
+                        label: 'Pending Tasks',
+                        data: [pendingTasks],
+                        backgroundColor: pendingGradient,
+                        borderColor: 'rgba(249, 115, 22, 1)',
+                        borderWidth: 2,
+                        borderRadius: 12,
+                        barPercentage: 0.8,
+                        categoryPercentage: 0.9
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                indexAxis: 'y',
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                },
+                scales: {
+                    x: {
+                        stacked: false,
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)',
+                            borderColor: 'rgba(255, 255, 255, 0.2)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.9)',
+                            font: {
+                                size: 14,
+                                weight: '500'
+                            },
+                            padding: 10,
+                            stepSize: 1,
+                            callback: function(value) {
+                                return Math.round(value) + ' tasks';
+                            }
+                        }
+                    },
+                    y: {
+                        stacked: false,
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        align: 'center',
+                        labels: {
+                            color: 'rgba(255, 255, 255, 1)',
+                            padding: 25,
+                            font: {
+                                size: 15,
+                                weight: '600',
+                                family: "'Segoe UI', Arial, sans-serif"
+                            },
+                            usePointStyle: true,
+                            pointStyle: 'rectRounded'
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(0, 0, 0, 0.95)',
+                        titleColor: 'rgba(255, 255, 255, 1)',
+                        bodyColor: 'rgba(255, 255, 255, 1)',
+                        padding: 15,
+                        titleFont: {
+                            size: 16,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 14,
+                            weight: '500'
+                        },
+                        displayColors: true,
+                        callbacks: {
+                            title: function() {
+                                return 'Task Statistics';
+                            },
+                            label: function(context) {
+                                const value = Math.round(context.raw);
+                                const total = completedTasks + pendingTasks;
+                                const percentage = Math.round((value / total) * 100);
+                                return `${context.dataset.label}: ${value} (${percentage}%)`;
+                            }
+                        }
+                    },
+                    afterDraw: function(chart) {
+                        const ctx = chart.ctx;
+                        const xAxis = chart.scales.x;
+                        const yAxis = chart.scales.y;
+                        
+                        ctx.save();
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.font = '600 16px "Segoe UI"';
+                        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+                        
+                        const centerY = (yAxis.top + yAxis.bottom) / 2;
+                        const roundedRate = Math.round(completionRate);
+                        ctx.fillText(`Completion Rate: ${roundedRate}%`, xAxis.right + 60, centerY);
+                        
+                        ctx.restore();
+                    }
+                },
+                animation: {
+                    duration: 2000,
+                    easing: 'easeOutElastic'
+                }
+            }
+        });
+    </script>
+</body>
+</html>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
